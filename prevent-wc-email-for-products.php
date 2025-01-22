@@ -57,3 +57,33 @@ function pwcemail_settings_page()
     </form>
 <?php
 }
+
+// Disable WooCommerce customer order emails based on product IDs and Category ids
+add_filter('woocommerce_email_recipient_customer_processing_order', 'pwcemail_disable_customer_email_for_specific_products', 10, 2);
+
+function pwcemail_disable_customer_email_for_specific_products($recipient, $order)
+{
+
+    $disabled_product_ids = array_map('trim', explode(',', get_option('pwcemail_product_ids')));
+    $disabled_category_ids = array_map('trim', explode(',', get_option('pwcemail_category_ids')));
+
+    foreach ($order->get_items() as $item) {
+        $product_id = $item->get_product_id();
+
+        // Disabled product ID
+        if (in_array($product_id, $disabled_product_ids)) {
+            $recipient = '';
+            break;
+        }
+
+        // Disabled category ID
+        $product = wc_get_product($product_id);
+        $categories = $product->get_category_ids();
+        if (array_intersect($categories, $disabled_category_ids)) {
+            $recipient = '';
+            break;
+        }
+    }
+
+    return $recipient;
+}
