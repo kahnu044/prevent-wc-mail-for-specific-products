@@ -87,3 +87,15 @@ function pwcemail_disable_customer_email_for_specific_products($recipient, $orde
 
     return $recipient;
 }
+
+// Tabs for email notification setting
+add_filter('woocommerce_product_data_tabs', 'pwcemail_email_notification_product_tab');
+function pwcemail_email_notification_product_tab($tabs)
+{
+    $tabs['pwcemail_email_notification_tab'] = array(
+        'label'    => __('Email Notification', 'pwcemail'),
+        'target'   => 'email_notification_product_data',
+        'class'    => array('show_if_simple', 'show_if_variable')
+    );
+    return $tabs;
+}
