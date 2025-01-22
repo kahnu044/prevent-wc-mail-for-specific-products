@@ -99,3 +99,58 @@ function pwcemail_email_notification_product_tab($tabs)
     );
     return $tabs;
 }
+
+add_action('woocommerce_product_data_panels', 'pwcemail_email_notification_product_data_fields');
+function pwcemail_email_notification_product_data_fields()
+{
+?>
+    <div id="email_notification_product_data" class="panel woocommerce_options_panel">
+        <div class="options_group">
+            <p><?php _e('Disable Default Email Notification Settings', 'pwcemail'); ?></p>
+            <?php
+
+            woocommerce_wp_checkbox(array(
+                'id'          => 'pwcemail_disable_processing_order',
+                'label'       => __('Processing Order', 'pwcemail'),
+                'description' => __('Disable the default processing order email.', 'pwcemail'),
+            ));
+
+            woocommerce_wp_checkbox(array(
+                'id'          => 'pwcemail_disable_completed_order',
+                'label'       => __('Completed Order', 'pwcemail'),
+                'description' => __('Disable the default completed order email.', 'pwcemail'),
+            ));
+
+            woocommerce_wp_checkbox(array(
+                'id'          => 'pwcemail_disable_on_hold_order',
+                'label'       => __('On Hold Order', 'pwcemail'),
+                'description' => __('Disable the default on hold order email.', 'pwcemail'),
+            ));
+
+            woocommerce_wp_checkbox(array(
+                'id'          => 'pwcemail_disable_cancelled_order',
+                'label'       => __('Cancelled Order', 'pwcemail'),
+                'description' => __('Disable the default cancelled order email.', 'pwcemail'),
+            ));
+
+            ?>
+        </div>
+    </div>
+<?php
+}
+
+add_action('woocommerce_process_product_meta', 'pwcemail_save_email_notification');
+function pwcemail_save_email_notification($post_id)
+{
+    $settings = array(
+        'pwcemail_disable_processing_order',
+        'pwcemail_disable_completed_order',
+        'pwcemail_disable_on_hold_order',
+        'pwcemail_disable_cancelled_order'
+    );
+
+    foreach ($settings as $setting) {
+        $value = isset($_POST[$setting]) ? 'yes' : 'no';
+        update_post_meta($post_id, $setting, $value);
+    }
+}
